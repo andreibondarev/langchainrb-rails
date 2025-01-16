@@ -1,0 +1,20 @@
+# frozen_string_literal: true
+
+LangchainrbRails.configure do |config|
+  config.vectorsearch = Langchain::Vectorsearch::SqliteVec.new(
+    llm: <%= llm_class %>.new(api_key: ENV["<%= llm.upcase %>_API_KEY"])
+  )
+end 
+
+ActiveRecord::ConnectionAdapters::SQLite3Adapter.class_eval do
+  alias_method :before_configure_connection, :configure_connection
+
+  def configure_connection
+    before_configure_connection
+
+    @raw_connection.enable_load_extension(true)
+    SqliteVec.load(@raw_connection)
+    @raw_connection.enable_load_extension(false)
+  end
+end
+

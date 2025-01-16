@@ -10,6 +10,7 @@ require "langchainrb_rails/railtie"
 require "langchainrb_rails/version"
 
 require_relative "langchainrb_overrides/vectorsearch/pgvector"
+require_relative "langchainrb_overrides/vectorsearch/sqlite_vec"
 require_relative "langchainrb_overrides/assistant"
 require_relative "langchainrb_overrides/message"
 
