@@ -1,0 +1,10 @@
+class <%= migration_class_name %> < ActiveRecord::Migration<%= migration_version %>
+  def change
+    add_column :<%= table_name %>, :embedding, :blob,
+      limit: LangchainrbRails
+        .config
+        .vectorsearch
+        .llm
+        .default_dimensions
+  end
+end

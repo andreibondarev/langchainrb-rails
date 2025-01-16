@@ -91,6 +91,16 @@ module LangchainrbRails
             has_neighbors(:embedding)
             class_variable_get(:@@provider).model = self
           end
+
+          # SQLite-Vec-specific configuration
+          return unless LangchainrbRails.config.vectorsearch.is_a?(Langchain::Vectorsearch::SqliteVec)
+
+          # Define nearest_neighbors scope for SQLite-Vec
+          scope :nearest_neighbors, lambda { |column, vector|
+            unscoped.select("#{table_name}.*, vec_distance_cosine(#{column}, '#{vector.to_json}') as distance")
+                    .order("distance")
+          }
+          class_variable_get(:@@provider).model = self
         end
 
         # Iterates over records and generate embeddings.
@@ -112,7 +122,8 @@ module LangchainrbRails
             k: k
           )
 
-          return records if LangchainrbRails.config.vectorsearch.is_a?(Langchain::Vectorsearch::Pgvector)
+          return records if LangchainrbRails.config.vectorsearch.is_a?(Langchain::Vectorsearch::Pgvector) ||
+                            LangchainrbRails.config.vectorsearch.is_a?(Langchain::Vectorsearch::SqliteVec)
 
           # We use "__id" when Weaviate is the provider
           ids = records.map { |record| record.try("id") || record.dig("__id") }
