@@ -44,9 +44,12 @@ class Message
 end
 
 RSpec.describe Langchain::Assistant do
+  let(:test_block) { proc { "test block executed" } }
   let(:tools) { [] }
   let(:llm) { Langchain::LLM::GoogleGemini.new(api_key: "123") }
-  let(:assistant) { described_class.new(llm: llm, id: nil, tools: tools, instructions: "Test instructions", tool_choice: "auto") }
+  let(:assistant) do
+    described_class.new(llm: llm, id: nil, tools: tools, instructions: "Test instructions", tool_choice: "auto", &test_block)
+  end
 
   describe "#initialize" do
     it "sets the id and calls original_initialize" do
@@ -54,6 +57,11 @@ RSpec.describe Langchain::Assistant do
       expect(assistant.tools).to eq(tools)
       expect(assistant.instructions).to eq("Test instructions")
       expect(assistant.tool_choice).to eq("auto")
+    end
+
+    it "passes the block to the original_initialize" do
+      assigned_block = assistant.instance_variable_get(:@block)
+      expect(assigned_block).to eq(test_block)
     end
   end
 
