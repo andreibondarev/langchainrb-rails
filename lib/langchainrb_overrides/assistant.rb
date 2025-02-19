@@ -8,9 +8,9 @@ module Langchain
 
     alias_method :original_initialize, :initialize
 
-    def initialize(id: nil, **kwargs) # rubocop:disable Style/ArgumentsForwarding
+    def initialize(id: nil, **kwargs, &block) # rubocop:disable Style/ArgumentsForwarding
       @id = id
-      original_initialize(**kwargs) # rubocop:disable Style/ArgumentsForwarding
+      original_initialize(**kwargs, &block) # rubocop:disable Style/ArgumentsForwarding
     end
 
     def save
